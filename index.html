@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Juego de Votación</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px;
+    }
+
+    .opcion {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 120px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .votante {
+      margin: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    #resultado {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+
+    .barra {
+      height: 20px;
+      background: #4CAF50;
+      margin: 5px auto;
+      transition: width 1s;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Simulador de Votación</h1>
+
+<div class="container">
+  <div class="opcion">A</div>
+  <div class="opcion">B</div>
+  <div class="opcion">C</div>
+  <div class="opcion">D</div>
+</div>
+
+<h3>Votantes</h3>
+
+<div id="votantes"></div>
+
+<button onclick="calcular()">Calcular resultado</button>
+
+<div id="resultado"></div>
+
+<script>
+const opciones = ["A","B","C","D"];
+const puntos = [4,3,2,1];
+
+function crearVotantes() {
+  const cont = document.getElementById("votantes");
+
+  for(let i=1;i<=4;i++){
+    let div = document.createElement("div");
+    div.className = "votante";
+
+    div.innerHTML = `
+      <input placeholder="Nombre votante ${i}">
+      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
+    `;
+
+    cont.appendChild(div);
+  }
+}
+
+function calcular(){
+  let resultado = {A:0,B:0,C:0,D:0};
+
+  document.querySelectorAll(".votante").forEach(v => {
+    let selects = v.querySelectorAll("select");
+
+    selects.forEach((s,i)=>{
+      resultado[s.value] += puntos[i];
+    });
+  });
+
+  mostrar(resultado);
+}
+
+function animar(id, valor){
+  let actual = 0;
+  let intervalo = setInterval(()=>{
+    actual++;
+    document.getElementById(id).style.width = actual + "%";
+    if(actual >= valor) clearInterval(intervalo);
+  },10);
+}
+
+function mostrar(res){
+  let totalMax = 0;
+  for(let k in res) if(res[k]>totalMax) totalMax = res[k];
+
+  let html = "";
+
+  for(let k in res){
+    let porcentaje = (res[k]/totalMax)*100;
+
+    html += `
+      <div>${k}: ${res[k]} pts</div>
+      <div class="barra" id="barra${k}" style="width:0%"></div>
+    `;
+  }
+
+  document.getElementById("resultado").innerHTML = html;
+
+  for(let k in res){
+    let porcentaje = (res[k]/totalMax)*100;
+    animar("barra"+k, porcentaje);
+  }
+}
+
+crearVotantes();
+</script>
+
+</body>
+</html>
