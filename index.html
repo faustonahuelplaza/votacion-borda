@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Etiqueta crucial para móviles -->
   <title>Simulador de Votación Borda</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,12 +38,14 @@
       padding: 30px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.05);
       border: 1px solid #efe8e0;
-      position: relative; /* Permite posicionar el botón de volver en la esquina */
+      position: relative;
+      box-sizing: border-box; /* Previene desbordes */
     }
 
     .intro-container {
       max-width: 900px;
       width: 100%;
+      box-sizing: border-box;
     }
 
     h1 {
@@ -99,6 +102,7 @@
       border-radius: 12px;
       border: 1px solid #eaeaea;
       box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      box-sizing: border-box;
     }
 
     .intro-content p {
@@ -138,6 +142,7 @@
       box-shadow: 0 6px 15px rgba(168, 75, 56, 0.25);
       font-family: 'Montserrat', sans-serif;
       font-size: 16px;
+      box-sizing: border-box;
     }
 
     .opcion-card .icono {
@@ -161,6 +166,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      box-sizing: border-box;
     }
 
     .votante input[type="text"] {
@@ -205,6 +211,7 @@
       font-size: 13px;
       outline: none;
       cursor: pointer;
+      box-sizing: border-box;
     }
 
     /* Panel de Configuración */
@@ -216,6 +223,7 @@
       max-width: 500px;
       margin: 40px auto;
       box-shadow: 0 8px 20px rgba(124, 140, 92, 0.3);
+      box-sizing: border-box;
     }
     
     .configuracion h4 {
@@ -245,6 +253,7 @@
       position: relative;
       margin-right: 15px;
       transition: 0.3s;
+      flex-shrink: 0; /* Evita que el botón se deforme */
     }
 
     .toggle-slider::after {
@@ -287,6 +296,7 @@
       font-weight: 700;
       box-shadow: 0 6px 15px rgba(168, 75, 56, 0.4);
       transition: all 0.3s;
+      max-width: 100%;
     }
 
     button:hover {
@@ -339,6 +349,64 @@
       border-radius: 10px;
       transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
+
+    /* ========================================================
+       DISEÑO RESPONSIVE (SOLO APLICA PARA CELULARES Y TABLETS)
+       ======================================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px 10px; /* Reduce márgenes externos */
+      }
+      
+      .app-container, .intro-content {
+        padding: 20px 15px; /* Reduce relleno interno */
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        margin-top: 25px; /* Espacio extra para que no choque con el botón volver */
+      }
+
+      /* Convierte la fila de comida en una cuadrícula de 2x2 */
+      .opciones-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      /* Apila a los votantes uno debajo del otro */
+      .votantes-container {
+        flex-direction: column;
+      }
+
+      /* Apila los resultados uno debajo del otro */
+      #resultado {
+        grid-template-columns: 1fr;
+      }
+
+      .configuracion {
+        padding: 15px;
+        margin: 20px auto;
+      }
+
+      .toggle-label span {
+        font-size: 13px; /* Achica un poco el texto de los sistemas */
+      }
+      
+      /* Ajusta el botón volver para que no rompa el diseño */
+      .btn-volver {
+        top: 15px;
+        right: 15px;
+        font-size: 10px;
+        padding: 6px 12px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 12px 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -368,7 +436,7 @@
 
 <!-- PESTAÑA 2: SIMULADOR (Oculto al inicio) -->
 <div class="app-container" id="pantalla-simulador" style="display: none;">
-  <!-- NUEVO BOTÓN PARA VOLVER -->
+  <!-- BOTÓN PARA VOLVER -->
   <button class="btn-volver" onclick="volverIntroduccion()">↩ Volver</button>
 
   <h1>Simulador de Votación Borda</h1>
@@ -410,11 +478,13 @@
 function comenzarSimulador() {
   document.getElementById('pantalla-intro').style.display = 'none';
   document.getElementById('pantalla-simulador').style.display = 'block';
+  window.scrollTo(0, 0); // Sube al tope de la pantalla al cambiar
 }
 
 function volverIntroduccion() {
   document.getElementById('pantalla-simulador').style.display = 'none';
   document.getElementById('pantalla-intro').style.display = 'block';
+  window.scrollTo(0, 0);
 }
 
 // --- LÓGICA DEL SIMULADOR ---
