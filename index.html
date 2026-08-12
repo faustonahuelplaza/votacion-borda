@@ -3,157 +3,372 @@
 <head>
   <meta charset="UTF-8">
   <title>Simulador de Votación Borda</title>
+  <!-- Importamos tipografías modernas desde Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  
   <style>
+    :root {
+      --color-fondo: #fcf8f2;
+      --color-primario: #a84b38;
+      --color-primario-hover: #8f3e2d;
+      --color-metodo: #7c8c5c;
+      --tarjeta-1: #bed4eb; /* Azul */
+      --tarjeta-2: #c6e0c6; /* Verde */
+      --tarjeta-3: #faeeb5; /* Amarillo */
+      --tarjeta-4: #f7d2d6; /* Rosa */
+    }
+
     body {
-      font-family: Arial;
-      text-align: center;
-      background: #f5f5f5;
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--color-fondo);
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      background: #ffffff;
+      max-width: 900px;
+      width: 100%;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+      border: 1px solid #efe8e0;
     }
 
     h1 {
-      margin-top: 20px;
-    }
-
-    .container {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 20px;
-      flex-wrap: wrap;
-    }
-
-    .opcion {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 120px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      font-weight: bold;
-    }
-
-    .votante {
-      margin: 10px;
-    }
-
-    /* Estilos para el nuevo panel de configuración */
-    .configuracion {
-      background: #e9ecef;
-      padding: 15px;
-      border-radius: 8px;
-      max-width: 400px;
-      margin: 20px auto;
-      text-align: left;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    
-    .configuracion h4 {
-      margin-top: 0;
-      margin-bottom: 10px;
+      font-family: 'Montserrat', sans-serif;
       text-align: center;
+      color: var(--color-primario);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 28px;
+      margin-bottom: 30px;
     }
 
-    .configuracion label {
-      display: block;
-      margin-bottom: 8px;
-      cursor: pointer;
+    h3 {
+      font-family: 'Montserrat', sans-serif;
+      text-align: center;
+      color: #555;
+      font-size: 16px;
+      margin-top: 30px;
+      margin-bottom: 20px;
     }
 
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #4CAF50;
+    /* Tarjetas de Opciones */
+    .opciones-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .opcion-card {
+      background: linear-gradient(135deg, #c76a55, var(--color-primario));
       color: white;
-      cursor: pointer;
-      margin-top: 10px;
+      border-radius: 12px;
+      padding: 20px 10px;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(168, 75, 56, 0.25);
+      font-family: 'Montserrat', sans-serif;
       font-size: 16px;
     }
 
-    button:hover {
-      background: #45a049;
+    .opcion-card .icono {
+      font-size: 35px;
+      margin-bottom: 8px;
+      display: block;
     }
 
+    /* Sección Votantes */
+    .votantes-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .votante {
+      border-radius: 15px;
+      padding: 15px;
+      flex: 1;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .votante input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 20px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.7);
+      outline: none;
+    }
+
+    .votante input[type="text"]:focus {
+      background: #ffffff;
+      border-color: #999;
+    }
+
+    .preferencias-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .pref-item label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(0,0,0,0.6);
+      display: block;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .votante select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 15px;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Panel de Configuración */
+    .configuracion {
+      background: var(--color-metodo);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      margin: 40px auto;
+      box-shadow: 0 8px 20px rgba(124, 140, 92, 0.3);
+    }
+    
+    .configuracion h4 {
+      margin: 0 0 15px 0;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 1px;
+    }
+
+    /* Estilos para Radio Buttons tipo "Toggle" */
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .toggle-label input {
+      display: none; /* Ocultamos el círculo clásico */
+    }
+
+    .toggle-slider {
+      width: 44px;
+      height: 24px;
+      background-color: rgba(255,255,255,0.4);
+      border-radius: 24px;
+      position: relative;
+      margin-right: 15px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.3s;
+    }
+
+    .toggle-label input:checked + .toggle-slider {
+      background-color: white;
+    }
+
+    .toggle-label input:checked + .toggle-slider::after {
+      background-color: var(--color-metodo);
+      left: 23px;
+    }
+
+    /* Botón Principal */
+    .btn-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 35px;
+      border: none;
+      border-radius: 30px;
+      background: var(--color-primario);
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      box-shadow: 0 6px 15px rgba(168, 75, 56, 0.4);
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: var(--color-primario-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Resultados */
     #resultado {
-      margin-top: 30px;
-      font-size: 18px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
     }
 
     .resultado-item {
-      margin-bottom: 20px;
-      background: white;
+      background: #f9f9f9;
       padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      border: 1px solid #eee;
+    }
+
+    .resultado-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-family: 'Montserrat', sans-serif;
     }
 
     .detalle-calculo {
-      font-size: 14px;
-      color: #555;
-      margin-top: 5px;
+      font-size: 13px;
+      color: #777;
       margin-bottom: 10px;
       font-style: italic;
     }
 
+    .barra-bg {
+      width: 100%;
+      background: #e0e0e0;
+      border-radius: 10px;
+      height: 12px;
+      overflow: hidden;
+    }
+
     .barra {
-      height: 20px;
-      background: #4CAF50;
-      border-radius: 4px;
-      transition: width 1.5s ease-out;
+      height: 100%;
+      background: var(--color-metodo);
+      width: 0%;
+      border-radius: 10px;
+      transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
   </style>
 </head>
 <body>
 
-<h1>Simulador de Votación Borda</h1>
+<div class="app-container">
+  <h1>Simulador de Votación Borda</h1>
 
-<div class="container">
-  <div class="opcion">Lomito</div>
-  <div class="opcion">Milanesas</div>
-  <div class="opcion">Asado</div>
-  <div class="opcion">Hamburguesa</div>
+  <!-- Tarjetas visuales de las opciones -->
+  <div class="opciones-container">
+    <div class="opcion-card">
+      <span class="icono">🥪</span>
+      Lomito
+    </div>
+    <div class="opcion-card">
+      <span class="icono">🍗</span>
+      Milanesas
+    </div>
+    <div class="opcion-card">
+      <span class="icono">🥩</span>
+      Asado
+    </div>
+    <div class="opcion-card">
+      <span class="icono">🍔</span>
+      Hamburguesa
+    </div>
+  </div>
+
+  <h3>VOTANTES (ORDEN DE PREFERENCIA: 1º a 4º)</h3>
+
+  <!-- Contenedor donde se generan los votantes por JS -->
+  <div class="votantes-container" id="votantes"></div>
+
+  <!-- Panel de Configuración Estilizado -->
+  <div class="configuracion">
+    <h4>MÉTODO DE PUNTUACIÓN</h4>
+    
+    <label class="toggle-label">
+      <input type="radio" name="metodo" value="n" checked>
+      <div class="toggle-slider"></div>
+      <span><strong>Sistema n:</strong> 4 pts (1º), 3 pts (2º), 2 pts (3º), 1 pt (4º)</span>
+    </label>
+    
+    <label class="toggle-label">
+      <input type="radio" name="metodo" value="n-1">
+      <div class="toggle-slider"></div>
+      <span><strong>Sistema n-1:</strong> 3 pts (1º), 2 pts (2º), 1 pt (3º), 0 pts (4º)</span>
+    </label>
+  </div>
+
+  <div class="btn-container">
+    <button onclick="calcular()">CALCULAR RESULTADO Y VER DESGLOSE 🧮</button>
+  </div>
+
+  <div id="resultado"></div>
 </div>
-
-<h3>Votantes (Orden de preferencia: 1º a 4º)</h3>
-
-<div id="votantes"></div>
-
-<!-- Nuevo panel de selección de método -->
-<div class="configuracion">
-  <h4>Método de Puntuación</h4>
-  <label>
-    <input type="radio" name="metodo" value="n" checked>
-    <strong>Sistema n:</strong> 4 pts (1º), 3 pts (2º), 2 pts (3º), 1 pt (4º)
-  </label>
-  <label>
-    <input type="radio" name="metodo" value="n-1">
-    <strong>Sistema n-1:</strong> 3 pts (1º), 2 pts (2º), 1 pt (3º), 0 pts (4º)
-  </label>
-</div>
-
-<button onclick="calcular()">Calcular resultado y ver desglose</button>
-
-<div id="resultado"></div>
 
 <script>
 const opciones = ["Lomito", "Milanesas", "Asado", "Hamburguesa"];
+const coloresTarjetas = ["var(--tarjeta-1)", "var(--tarjeta-2)", "var(--tarjeta-3)", "var(--tarjeta-4)"];
 
 function crearVotantes() {
   const cont = document.getElementById("votantes");
+  cont.innerHTML = ""; // Limpiamos por las dudas
 
   for(let i=1; i<=4; i++){
     let div = document.createElement("div");
     div.className = "votante";
+    div.style.backgroundColor = coloresTarjetas[i-1]; // Asigna un color distinto a cada uno
+
+    let optionsHTML = opciones.map(o => `<option value="${o}">${o}</option>`).join("");
 
     div.innerHTML = `
-      <input placeholder="Nombre votante ${i}">
-      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
-      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
-      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
-      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
+      <input type="text" placeholder="Nombre votante ${i}">
+      <div class="preferencias-grid">
+        <div class="pref-item">
+          <label>1º Pref</label>
+          <select>${optionsHTML}</select>
+        </div>
+        <div class="pref-item">
+          <label>2º Pref</label>
+          <select>${optionsHTML}</select>
+        </div>
+        <div class="pref-item">
+          <label>3º Pref</label>
+          <select>${optionsHTML}</select>
+        </div>
+        <div class="pref-item">
+          <label>4º Pref</label>
+          <select>${optionsHTML}</select>
+        </div>
+      </div>
     `;
 
     cont.appendChild(div);
@@ -161,10 +376,8 @@ function crearVotantes() {
 }
 
 function calcular(){
-  // 1. Verificamos qué método está seleccionado en los radio buttons
   const metodoSeleccionado = document.querySelector('input[name="metodo"]:checked').value;
   
-  // 2. Asignamos los puntos dinámicamente según el método
   let puntos;
   if (metodoSeleccionado === "n") {
     puntos = [4, 3, 2, 1];
@@ -182,25 +395,14 @@ function calcular(){
 
   document.querySelectorAll(".votante").forEach(v => {
     let selects = v.querySelectorAll("select");
-
     selects.forEach((s, i)=>{
       let opcionElegida = s.value;
-      resultado[opcionElegida] += puntos[i]; // Ahora usa los puntos dinámicos
+      resultado[opcionElegida] += puntos[i]; 
       detalle[opcionElegida][i]++;
     });
   });
 
-  // 3. Pasamos los puntos a la función mostrar para que el desglose sea preciso
   mostrar(resultado, detalle, puntos);
-}
-
-function animar(id, valor){
-  let actual = 0;
-  let intervalo = setInterval(()=>{
-    actual++;
-    document.getElementById(id).style.width = actual + "%";
-    if(actual >= valor) clearInterval(intervalo);
-  }, 15);
 }
 
 function mostrar(res, det, puntosActuales){
@@ -215,8 +417,7 @@ function mostrar(res, det, puntosActuales){
     let desgloseMatematico = [];
     for(let i = 0; i < 4; i++) {
       if(det[k][i] > 0) {
-        // Multiplicamos por los puntos actuales seleccionados (n o n-1)
-        desgloseMatematico.push(`(${det[k][i]} voto/s × ${puntosActuales[i]} pts)`);
+        desgloseMatematico.push(`(${det[k][i]} × ${puntosActuales[i]}p)`);
       }
     }
     
@@ -224,21 +425,30 @@ function mostrar(res, det, puntosActuales){
 
     html += `
       <div class="resultado-item">
-        <div><strong>${k}: ${res[k]} pts totales</strong></div>
+        <div class="resultado-header">
+          <strong>${k}</strong>
+          <strong>${res[k]} pts</strong>
+        </div>
         <div class="detalle-calculo">Cálculo: ${textoDesglose}</div>
-        <div class="barra" id="barra${k}" style="width:0%"></div>
+        <div class="barra-bg">
+          <div class="barra" id="barra${k}"></div>
+        </div>
       </div>
     `;
   }
 
   document.getElementById("resultado").innerHTML = html;
 
-  for(let k in res){
-    let porcentaje = totalMax > 0 ? (res[k]/totalMax)*100 : 0;
-    animar("barra"+k, porcentaje);
-  }
+  // Pequeño timeout para permitir que el DOM se actualice antes de animar
+  setTimeout(() => {
+    for(let k in res){
+      let porcentaje = totalMax > 0 ? (res[k]/totalMax)*100 : 0;
+      document.getElementById("barra"+k).style.width = porcentaje + "%";
+    }
+  }, 50);
 }
 
+// Inicializamos el programa al cargar
 crearVotantes();
 </script>
 
