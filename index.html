@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Juego de Votación</title>
+  <title>Simulador de Votación Borda</title>
   <style>
     body {
       font-family: Arial;
@@ -19,6 +19,7 @@
       justify-content: center;
       gap: 15px;
       margin: 20px;
+      flex-wrap: wrap;
     }
 
     .opcion {
@@ -27,6 +28,7 @@
       border-radius: 10px;
       width: 120px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      font-weight: bold;
     }
 
     .votante {
@@ -41,57 +43,83 @@
       color: white;
       cursor: pointer;
       margin-top: 20px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #45a049;
     }
 
     #resultado {
       margin-top: 30px;
-      font-size: 20px;
+      font-size: 18px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .resultado-item {
+      margin-bottom: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .detalle-calculo {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      font-style: italic;
     }
 
     .barra {
       height: 20px;
       background: #4CAF50;
-      margin: 5px auto;
-      transition: width 1s;
+      border-radius: 4px;
+      transition: width 1.5s ease-out;
     }
   </style>
 </head>
 <body>
 
-<h1>Simulador de Votación</h1>
+<h1>Simulador de Votación Borda</h1>
 
 <div class="container">
-  <div class="opcion">A</div>
-  <div class="opcion">B</div>
-  <div class="opcion">C</div>
-  <div class="opcion">D</div>
+  <div class="opcion">Lomito</div>
+  <div class="opcion">Milanesas</div>
+  <div class="opcion">Asado</div>
+  <div class="opcion">Hamburguesa</div>
 </div>
 
-<h3>Votantes</h3>
+<h3>Votantes (Orden de preferencia: 1º a 4º)</h3>
 
 <div id="votantes"></div>
 
-<button onclick="calcular()">Calcular resultado</button>
+<button onclick="calcular()">Calcular resultado y ver desglose</button>
 
 <div id="resultado"></div>
 
 <script>
-const opciones = ["A","B","C","D"];
-const puntos = [4,3,2,1];
+// 1. Cambiamos las opciones
+const opciones = ["Lomito", "Milanesas", "Asado", "Hamburguesa"];
+const puntos = [4, 3, 2, 1]; // 4 pts al 1ro, 3 pts al 2do, etc.
 
 function crearVotantes() {
   const cont = document.getElementById("votantes");
 
-  for(let i=1;i<=4;i++){
+  for(let i=1; i<=4; i++){
     let div = document.createElement("div");
     div.className = "votante";
 
     div.innerHTML = `
       <input placeholder="Nombre votante ${i}">
-      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
-      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
-      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
-      <select>${opciones.map(o=>`<option>${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
+      <select>${opciones.map(o=>`<option value="${o}">${o}</option>`).join("")}</select>
     `;
 
     cont.appendChild(div);
@@ -99,17 +127,28 @@ function crearVotantes() {
 }
 
 function calcular(){
-  let resultado = {A:0,B:0,C:0,D:0};
+  // Objeto para guardar el puntaje total
+  let resultado = {Lomito: 0, Milanesas: 0, Asado: 0, Hamburguesa: 0};
+  
+  // Objeto para guardar CUÁNTAS veces salió cada opción en cada posición para mostrar el cálculo
+  let detalle = {
+    Lomito: [0, 0, 0, 0],
+    Milanesas: [0, 0, 0, 0],
+    Asado: [0, 0, 0, 0],
+    Hamburguesa: [0, 0, 0, 0]
+  };
 
   document.querySelectorAll(".votante").forEach(v => {
     let selects = v.querySelectorAll("select");
 
-    selects.forEach((s,i)=>{
-      resultado[s.value] += puntos[i];
+    selects.forEach((s, i)=>{
+      let opcionElegida = s.value;
+      resultado[opcionElegida] += puntos[i]; // Suma los puntos
+      detalle[opcionElegida][i]++;           // Suma un voto en esa posición (1ra, 2da, 3ra o 4ta)
     });
   });
 
-  mostrar(resultado);
+  mostrar(resultado, detalle);
 }
 
 function animar(id, valor){
@@ -118,32 +157,47 @@ function animar(id, valor){
     actual++;
     document.getElementById(id).style.width = actual + "%";
     if(actual >= valor) clearInterval(intervalo);
-  },10);
+  }, 15);
 }
 
-function mostrar(res){
+function mostrar(res, det){
   let totalMax = 0;
-  for(let k in res) if(res[k]>totalMax) totalMax = res[k];
+  for(let k in res) {
+    if(res[k] > totalMax) totalMax = res[k];
+  }
 
   let html = "";
 
   for(let k in res){
-    let porcentaje = (res[k]/totalMax)*100;
+    // Armamos el texto que explica el cálculo matemático
+    let desgloseMatematico = [];
+    for(let i = 0; i < 4; i++) {
+      if(det[k][i] > 0) {
+        desgloseMatematico.push(`(${det[k][i]} voto/s × ${puntos[i]} pts)`);
+      }
+    }
+    
+    let textoDesglose = desgloseMatematico.length > 0 ? desgloseMatematico.join(" + ") : "0 votos";
 
     html += `
-      <div>${k}: ${res[k]} pts</div>
-      <div class="barra" id="barra${k}" style="width:0%"></div>
+      <div class="resultado-item">
+        <div><strong>${k}: ${res[k]} pts totales</strong></div>
+        <div class="detalle-calculo">Cálculo: ${textoDesglose}</div>
+        <div class="barra" id="barra${k}" style="width:0%"></div>
+      </div>
     `;
   }
 
   document.getElementById("resultado").innerHTML = html;
 
+  // Animamos las barras en base al máximo puntaje obtenido
   for(let k in res){
-    let porcentaje = (res[k]/totalMax)*100;
+    let porcentaje = totalMax > 0 ? (res[k]/totalMax)*100 : 0;
     animar("barra"+k, porcentaje);
   }
 }
 
+// Inicializamos el programa
 crearVotantes();
 </script>
 
