@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Simulador de Votación Borda</title>
-  <!-- Importamos tipografías modernas desde Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,10 +13,10 @@
       --color-primario: #a84b38;
       --color-primario-hover: #8f3e2d;
       --color-metodo: #7c8c5c;
-      --tarjeta-1: #bed4eb; /* Azul */
-      --tarjeta-2: #c6e0c6; /* Verde */
-      --tarjeta-3: #faeeb5; /* Amarillo */
-      --tarjeta-4: #f7d2d6; /* Rosa */
+      --tarjeta-1: #bed4eb;
+      --tarjeta-2: #c6e0c6;
+      --tarjeta-3: #faeeb5;
+      --tarjeta-4: #f7d2d6;
     }
 
     body {
@@ -57,6 +56,35 @@
       font-size: 16px;
       margin-top: 30px;
       margin-bottom: 20px;
+    }
+
+    /* Estilos de la Pestaña de Introducción */
+    .intro-content {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #444;
+      margin-bottom: 30px;
+      background: #f9f9f9;
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+    }
+
+    .intro-content p {
+      margin-bottom: 15px;
+    }
+
+    .intro-content ul {
+      margin-bottom: 20px;
+    }
+
+    .intro-content li {
+      margin-bottom: 12px;
+    }
+
+    .destacado {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--color-primario);
     }
 
     /* Tarjetas de Opciones */
@@ -164,7 +192,6 @@
       letter-spacing: 1px;
     }
 
-    /* Estilos para Radio Buttons tipo "Toggle" */
     .toggle-label {
       display: flex;
       align-items: center;
@@ -174,7 +201,7 @@
     }
 
     .toggle-label input {
-      display: none; /* Ocultamos el círculo clásico */
+      display: none;
     }
 
     .toggle-slider {
@@ -208,7 +235,7 @@
       left: 23px;
     }
 
-    /* Botón Principal */
+    /* Botones */
     .btn-container {
       text-align: center;
       margin-bottom: 30px;
@@ -282,44 +309,51 @@
 </head>
 <body>
 
-<div class="app-container">
+<!-- PESTAÑA 1: INTRODUCCIÓN TEÓRICA -->
+<div class="app-container" id="pantalla-intro">
+  <h1>Método de Votación Borda</h1>
+  
+  <div class="intro-content">
+    <p>El método de Borda es una alternativa a Condorcet para superar el problema de los ciclos. Cada individuo (grupo de individuos) van a puntuar las alternativas según el lugar (orden) que ocupen en el ordenamiento. A diferencia de Condorcet, este método usa toda la información de preferencias (intensidad de las preferencias).</p>
+    
+    <p>Existen dos implementaciones alternativas del método de Borda:</p>
+    <ul>
+      <li><span class="destacado">Sistema $n$:</span> La alternativa en 1er lugar recibe $n$ puntos, la alternativa en 2do lugar, recibe $n - 1$ puntos, y así hasta la última alternativa donde "n" es el número de alternativas.</li>
+      <li><span class="destacado">Sistema $n-1$:</span> La alternativa en primer lugar recibe $n - 1$ puntos, la alternativa en segundo lugar, recibe $n - 2$ puntos, y así hasta la última donde " n " es el número de alternativas.</li>
+    </ul>
+
+    <p>Pueden utilizarse ambos criterios a menos que esté explícitamente indicado un criterio en el ejercicio y/o práctico. Este método sin embargo se usa mucho en eventos y competiciones musicales y en elección de sedes, mejores jugadores, etc..</p>
+
+    <p><strong>A tener en cuenta:</strong> El principal problema del método Borda es que viola el principio de mayoría y viola el ganador de Condorcet. Además, la presencia o no de alternativas irrelevantes puede modificar el resultado de la elección.</p>
+  </div>
+
+  <div class="btn-container">
+    <button onclick="comenzarSimulador()">COMENZAR SIMULADOR ▶</button>
+  </div>
+</div>
+
+<!-- PESTAÑA 2: SIMULADOR (Oculto al inicio) -->
+<div class="app-container" id="pantalla-simulador" style="display: none;">
   <h1>Simulador de Votación Borda</h1>
 
-  <!-- Tarjetas visuales de las opciones -->
   <div class="opciones-container">
-    <div class="opcion-card">
-      <span class="icono">🥪</span>
-      Lomito
-    </div>
-    <div class="opcion-card">
-      <span class="icono">🍗</span>
-      Milanesas
-    </div>
-    <div class="opcion-card">
-      <span class="icono">🥩</span>
-      Asado
-    </div>
-    <div class="opcion-card">
-      <span class="icono">🍔</span>
-      Hamburguesa
-    </div>
+    <div class="opcion-card"><span class="icono">🥪</span>Lomito</div>
+    <div class="opcion-card"><span class="icono">🍗</span>Milanesas</div>
+    <div class="opcion-card"><span class="icono">🥩</span>Asado</div>
+    <div class="opcion-card"><span class="icono">🍔</span>Hamburguesa</div>
   </div>
 
   <h3>VOTANTES (ORDEN DE PREFERENCIA: 1º a 4º)</h3>
 
-  <!-- Contenedor donde se generan los votantes por JS -->
   <div class="votantes-container" id="votantes"></div>
 
-  <!-- Panel de Configuración Estilizado -->
   <div class="configuracion">
     <h4>MÉTODO DE PUNTUACIÓN</h4>
-    
     <label class="toggle-label">
       <input type="radio" name="metodo" value="n" checked>
       <div class="toggle-slider"></div>
       <span><strong>Sistema n:</strong> 4 pts (1º), 3 pts (2º), 2 pts (3º), 1 pt (4º)</span>
     </label>
-    
     <label class="toggle-label">
       <input type="radio" name="metodo" value="n-1">
       <div class="toggle-slider"></div>
@@ -335,17 +369,24 @@
 </div>
 
 <script>
+// --- LOGICA DE CAMBIO DE PANTALLA ---
+function comenzarSimulador() {
+  document.getElementById('pantalla-intro').style.display = 'none';
+  document.getElementById('pantalla-simulador').style.display = 'block';
+}
+
+// --- LOGICA DEL SIMULADOR ---
 const opciones = ["Lomito", "Milanesas", "Asado", "Hamburguesa"];
 const coloresTarjetas = ["var(--tarjeta-1)", "var(--tarjeta-2)", "var(--tarjeta-3)", "var(--tarjeta-4)"];
 
 function crearVotantes() {
   const cont = document.getElementById("votantes");
-  cont.innerHTML = ""; // Limpiamos por las dudas
+  cont.innerHTML = ""; 
 
   for(let i=1; i<=4; i++){
     let div = document.createElement("div");
     div.className = "votante";
-    div.style.backgroundColor = coloresTarjetas[i-1]; // Asigna un color distinto a cada uno
+    div.style.backgroundColor = coloresTarjetas[i-1]; 
 
     let optionsHTML = opciones.map(o => `<option value="${o}">${o}</option>`).join("");
 
@@ -370,7 +411,6 @@ function crearVotantes() {
         </div>
       </div>
     `;
-
     cont.appendChild(div);
   }
 }
@@ -439,7 +479,6 @@ function mostrar(res, det, puntosActuales){
 
   document.getElementById("resultado").innerHTML = html;
 
-  // Pequeño timeout para permitir que el DOM se actualice antes de animar
   setTimeout(() => {
     for(let k in res){
       let porcentaje = totalMax > 0 ? (res[k]/totalMax)*100 : 0;
@@ -448,7 +487,6 @@ function mostrar(res, det, puntosActuales){
   }, 50);
 }
 
-// Inicializamos el programa al cargar
 crearVotantes();
 </script>
 
