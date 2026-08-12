@@ -35,6 +35,29 @@
       margin: 10px;
     }
 
+    /* Estilos para el nuevo panel de configuración */
+    .configuracion {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 20px auto;
+      text-align: left;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .configuracion h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .configuracion label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
     button {
       padding: 10px 20px;
       border: none;
@@ -42,7 +65,7 @@
       background: #4CAF50;
       color: white;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 10px;
       font-size: 16px;
     }
 
@@ -98,14 +121,25 @@
 
 <div id="votantes"></div>
 
+<!-- Nuevo panel de selección de método -->
+<div class="configuracion">
+  <h4>Método de Puntuación</h4>
+  <label>
+    <input type="radio" name="metodo" value="n" checked>
+    <strong>Sistema n:</strong> 4 pts (1º), 3 pts (2º), 2 pts (3º), 1 pt (4º)
+  </label>
+  <label>
+    <input type="radio" name="metodo" value="n-1">
+    <strong>Sistema n-1:</strong> 3 pts (1º), 2 pts (2º), 1 pt (3º), 0 pts (4º)
+  </label>
+</div>
+
 <button onclick="calcular()">Calcular resultado y ver desglose</button>
 
 <div id="resultado"></div>
 
 <script>
-// 1. Cambiamos las opciones
 const opciones = ["Lomito", "Milanesas", "Asado", "Hamburguesa"];
-const puntos = [4, 3, 2, 1]; // 4 pts al 1ro, 3 pts al 2do, etc.
 
 function crearVotantes() {
   const cont = document.getElementById("votantes");
@@ -127,10 +161,18 @@ function crearVotantes() {
 }
 
 function calcular(){
-  // Objeto para guardar el puntaje total
-  let resultado = {Lomito: 0, Milanesas: 0, Asado: 0, Hamburguesa: 0};
+  // 1. Verificamos qué método está seleccionado en los radio buttons
+  const metodoSeleccionado = document.querySelector('input[name="metodo"]:checked').value;
   
-  // Objeto para guardar CUÁNTAS veces salió cada opción en cada posición para mostrar el cálculo
+  // 2. Asignamos los puntos dinámicamente según el método
+  let puntos;
+  if (metodoSeleccionado === "n") {
+    puntos = [4, 3, 2, 1];
+  } else {
+    puntos = [3, 2, 1, 0];
+  }
+
+  let resultado = {Lomito: 0, Milanesas: 0, Asado: 0, Hamburguesa: 0};
   let detalle = {
     Lomito: [0, 0, 0, 0],
     Milanesas: [0, 0, 0, 0],
@@ -143,12 +185,13 @@ function calcular(){
 
     selects.forEach((s, i)=>{
       let opcionElegida = s.value;
-      resultado[opcionElegida] += puntos[i]; // Suma los puntos
-      detalle[opcionElegida][i]++;           // Suma un voto en esa posición (1ra, 2da, 3ra o 4ta)
+      resultado[opcionElegida] += puntos[i]; // Ahora usa los puntos dinámicos
+      detalle[opcionElegida][i]++;
     });
   });
 
-  mostrar(resultado, detalle);
+  // 3. Pasamos los puntos a la función mostrar para que el desglose sea preciso
+  mostrar(resultado, detalle, puntos);
 }
 
 function animar(id, valor){
@@ -160,7 +203,7 @@ function animar(id, valor){
   }, 15);
 }
 
-function mostrar(res, det){
+function mostrar(res, det, puntosActuales){
   let totalMax = 0;
   for(let k in res) {
     if(res[k] > totalMax) totalMax = res[k];
@@ -169,11 +212,11 @@ function mostrar(res, det){
   let html = "";
 
   for(let k in res){
-    // Armamos el texto que explica el cálculo matemático
     let desgloseMatematico = [];
     for(let i = 0; i < 4; i++) {
       if(det[k][i] > 0) {
-        desgloseMatematico.push(`(${det[k][i]} voto/s × ${puntos[i]} pts)`);
+        // Multiplicamos por los puntos actuales seleccionados (n o n-1)
+        desgloseMatematico.push(`(${det[k][i]} voto/s × ${puntosActuales[i]} pts)`);
       }
     }
     
@@ -190,14 +233,12 @@ function mostrar(res, det){
 
   document.getElementById("resultado").innerHTML = html;
 
-  // Animamos las barras en base al máximo puntaje obtenido
   for(let k in res){
     let porcentaje = totalMax > 0 ? (res[k]/totalMax)*100 : 0;
     animar("barra"+k, porcentaje);
   }
 }
 
-// Inicializamos el programa
 crearVotantes();
 </script>
 
