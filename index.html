@@ -37,6 +37,7 @@
       padding: 30px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.05);
       border: 1px solid #efe8e0;
+      position: relative; /* Permite posicionar el botón de volver en la esquina */
     }
 
     .intro-container {
@@ -52,6 +53,7 @@
       letter-spacing: 1.5px;
       font-size: 28px;
       margin-bottom: 30px;
+      padding-top: 10px;
     }
 
     h3 {
@@ -61,6 +63,29 @@
       font-size: 16px;
       margin-top: 30px;
       margin-bottom: 20px;
+    }
+
+    /* Botón Volver */
+    .btn-volver {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background-color: #f0f0f0;
+      color: #555;
+      padding: 8px 16px;
+      font-size: 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+
+    .btn-volver:hover {
+      background-color: #e4e4e4;
+      color: #333;
+      transform: translateY(-1px);
     }
 
     /* Estilos de la Pestaña de Introducción */
@@ -343,6 +368,9 @@
 
 <!-- PESTAÑA 2: SIMULADOR (Oculto al inicio) -->
 <div class="app-container" id="pantalla-simulador" style="display: none;">
+  <!-- NUEVO BOTÓN PARA VOLVER -->
+  <button class="btn-volver" onclick="volverIntroduccion()">↩ Volver</button>
+
   <h1>Simulador de Votación Borda</h1>
 
   <div class="opciones-container">
@@ -378,13 +406,18 @@
 </div>
 
 <script>
-// --- LOGICA DE CAMBIO DE PANTALLA ---
+// --- LÓGICA DE CAMBIO DE PANTALLA ---
 function comenzarSimulador() {
   document.getElementById('pantalla-intro').style.display = 'none';
   document.getElementById('pantalla-simulador').style.display = 'block';
 }
 
-// --- LOGICA DEL SIMULADOR ---
+function volverIntroduccion() {
+  document.getElementById('pantalla-simulador').style.display = 'none';
+  document.getElementById('pantalla-intro').style.display = 'block';
+}
+
+// --- LÓGICA DEL SIMULADOR ---
 const opciones = ["Lomito", "Milanesas", "Asado", "Hamburguesa"];
 const coloresTarjetas = ["var(--tarjeta-1)", "var(--tarjeta-2)", "var(--tarjeta-3)", "var(--tarjeta-4)"];
 
